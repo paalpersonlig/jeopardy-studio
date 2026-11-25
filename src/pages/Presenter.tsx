@@ -39,6 +39,7 @@ export function Presenter() {
   })
 
   if (!game) return <main>Loading…</main>
+  const topScore = Math.max(...teams.map((t) => t.score))
   const clueAt = (o: Open) => game.categories[o.ci].clues[o.ri]
 
   function close() {
@@ -56,6 +57,8 @@ export function Presenter() {
       <header className="toolbar">
         <Link to={`/edit/${game.id}`}>← Editor</Link>
         <strong>{game.title}</strong>
+        <button className="team-add"
+          onClick={() => setTeams([...teams, { id: Date.now(), name: `Team ${teams.length + 1}`, score: 0 }])}>+ Team</button>
         <button onClick={() => { if (confirm('Reset board and scores?')) { setUsed(new Set()); setTeams(teams.map((t) => ({ ...t, score: 0 }))) } }}>Reset</button>
       </header>
 
@@ -125,15 +128,19 @@ export function Presenter() {
         </div>
       )}
 
-      <footer className="scores">
-        {teams.map((t) => (
-          <div key={t.id}>
-            <input aria-label="Team name" value={t.name}
+      <footer className="scoreboard" aria-label="Scoreboard">
+        {teams.map((t, i) => (
+          <div key={t.id} className={`team-card${t.score > 0 && t.score === topScore ? ' leader' : ''}${t.score < 0 ? ' negative' : ''}`}>
+            <span className="team-rank" aria-hidden="true">{t.score > 0 && t.score === topScore ? '★' : i + 1}</span>
+            {teams.length > 1 && (
+              <button className="team-remove" aria-label={`Remove ${t.name}`} title="Remove team"
+                onClick={() => { if (confirm(`Remove ${t.name}?`)) setTeams(teams.filter((x) => x.id !== t.id)) }}>×</button>
+            )}
+            <input className="team-name" aria-label="Team name" value={t.name}
               onChange={(e) => setTeams(teams.map((x) => (x.id === t.id ? { ...x, name: e.target.value } : x)))} />
-            <span className="score">{t.score}</span>
+            <span className="team-score">{t.score}</span>
           </div>
         ))}
-        <button onClick={() => setTeams([...teams, { id: Date.now(), name: `Team ${teams.length + 1}`, score: 0 }])}>+ Team</button>
       </footer>
     </main>
   )

@@ -6,7 +6,7 @@ button { cursor:pointer; padding:6px 10px; border-radius:6px; border:1px solid #
 input,textarea { background:#0b1030; color:var(--ink); border:1px solid #445; border-radius:6px; padding:6px; }
 a { color:var(--gold); margin:0 8px; }
 .error { color:#ff8a8a; }
-.toolbar,.size,.scores { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+.toolbar,.size { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
 .size input { width:56px; }
 .board { display:grid; gap:6px; }
 .cat { background:var(--blue); text-align:center; padding:12px 4px; font-weight:700; text-transform:uppercase; }
@@ -23,7 +23,6 @@ a { color:var(--gold); margin:0 8px; }
 .presenter .board.play .cell { color:var(--gold); font-size:clamp(24px,4vw,56px); font-weight:800; justify-content:center; align-items:center; min-height:min(14vh,120px); }
 .presenter .board.play .cell:disabled { opacity:.2; }
 .presenter .cat { font-size:clamp(14px,2vw,28px); }
-.scores > div { display:flex; flex-direction:column; align-items:center; } .score { font-size:32px; font-weight:800; }
 
 /* Library / home */
 .library { max-width:720px; display:flex; flex-direction:column; gap:24px; align-items:stretch; text-align:center; padding:40px 16px 64px;
@@ -155,3 +154,20 @@ kbd { margin-left:8px; font:600 11px/1 system-ui,sans-serif; padding:3px 6px; bo
 .wager { margin:auto; display:flex; flex-direction:column; gap:14px; align-items:center; }
 .wager h2 { margin:0; font-family:Impact,"Arial Narrow Bold",sans-serif; font-weight:400; font-size:clamp(32px,6vw,64px); letter-spacing:.05em; color:var(--gold); text-shadow:0 4px 0 #8a5a00; }
 .wager input { width:120px; font-size:24px; text-align:center; margin-left:8px; }
+
+/* Scoreboard: cards share the width and the score scales with the card, so any number of teams fits. */
+.scoreboard { display:grid; grid-template-columns:repeat(auto-fit, minmax(clamp(120px,14vw,240px), 1fr)); gap:10px; margin-top:16px; align-items:stretch; }
+.team-card { container-type:inline-size; position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; padding:12px 10px 10px;
+  background:linear-gradient(#17208a,#0c1466); border:2px solid #2b3bd0; border-radius:10px; box-shadow:inset 0 -4px 0 #0006, 0 6px 16px #0006; min-width:0; transition:border-color .2s, box-shadow .2s; }
+.team-card.leader { border-color:var(--gold); box-shadow:inset 0 -4px 0 #0006, 0 0 0 2px #ffcc3344, 0 0 24px #ffcc3344; }
+.team-rank { position:absolute; top:6px; left:9px; font-size:12px; font-weight:800; color:#8f9bff; }
+.team-card.leader .team-rank { color:var(--gold); font-size:14px; }
+.team-remove { position:absolute; top:3px; right:3px; width:24px; height:24px; padding:0; border:0; background:transparent; color:#8f9bff; font-size:18px; line-height:1; opacity:0; transition:opacity .15s; }
+.team-card:hover .team-remove,.team-remove:focus-visible { opacity:1; }
+.team-name { width:100%; box-sizing:border-box; text-align:center; background:transparent; border:1px solid transparent; font-size:clamp(11px,9cqw,15px); font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#b9c0f0; padding:3px 18px; }
+.team-name:hover,.team-name:focus { border-color:#3b4cf0; background:#0b1030aa; color:#fff; }
+.team-score { font-family:Impact,"Arial Narrow Bold",sans-serif; font-size:clamp(28px,24cqw,76px); line-height:1.05; color:#fff; text-shadow:0 3px 0 #000a; font-variant-numeric:tabular-nums; }
+.team-card.leader .team-score { color:var(--gold); text-shadow:0 3px 0 #8a5a00; }
+.team-card.negative .team-score { color:#ff8a98; }
+.team-add { background:transparent; border:2px dashed #3b4cf0; color:#b9c0f0; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+.team-add:hover { border-color:var(--gold); color:var(--gold); }
