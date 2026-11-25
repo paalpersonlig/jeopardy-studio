@@ -60,29 +60,57 @@ export function Presenter() {
       </header>
 
       {open ? (
-        <section className="clue-view">
+        <section className={`clue-view${open.revealed ? ' revealed' : ''}`}>
           {clueAt(open).dailyDouble && open.wager === undefined ? (
-            <div>
-              <h2>Daily Double!</h2>
-              <label>Wager <input type="number" min={0} defaultValue={game.rowValues[open.ri]}
+            <div className="wager">
+              <h2>★ Daily Double ★</h2>
+              <label>Wager <input type="number" min={0} autoFocus defaultValue={game.rowValues[open.ri]}
                 onKeyDown={(e) => { if (e.key === 'Enter') setOpen({ ...open, wager: +(e.target as HTMLInputElement).value }) }} /></label>
               <p>Press Enter to confirm.</p>
+              <button onClick={close}>Back to board <kbd>Esc</kbd></button>
             </div>
           ) : (
             <>
-              <Show c={clueAt(open).question} />
-              {open.revealed ? <div className="answer"><Show c={clueAt(open).answer} /></div>
-                : <button onClick={() => setOpen({ ...open, revealed: true })}>Reveal answer (space)</button>}
-              <div className="award">
-                {teams.map((t) => (
-                  <span key={t.id}>{t.name}
-                    <button onClick={() => adjust(t.id, 1)}>+</button>
-                    <button onClick={() => adjust(t.id, -1)}>−</button></span>
-                ))}
+              <header className="clue-meta">
+                <span>{game.categories[open.ci].title}</span>
+                <span className="clue-value">{open.wager ?? game.rowValues[open.ri]}</span>
+                {clueAt(open).dailyDouble && <span className="clue-dd">★ Daily Double</span>}
+              </header>
+
+              <div className="clue-stage">
+                <div className="clue-q"><Show c={clueAt(open).question} /></div>
+                {open.revealed ? (
+                  <div className="clue-a">
+                    <span className="clue-label">Answer</span>
+                    <Show c={clueAt(open).answer} />
+                  </div>
+                ) : (
+                  <button className="reveal" onClick={() => setOpen({ ...open, revealed: true })}>
+                    Reveal answer <kbd>Space</kbd>
+                  </button>
+                )}
               </div>
+
+              {open.revealed && (
+                <div className="award-row" role="group" aria-label="Award points">
+                  {teams.map((t) => (
+                    <div key={t.id} className="award-team">
+                      <span className="award-name">{t.name}</span>
+                      <span className="award-score">{t.score}</span>
+                      <div className="award-btns">
+                        <button className="plus" onClick={() => adjust(t.id, 1)} aria-label={`Award ${t.name}`}>+{open.wager ?? game.rowValues[open.ri]}</button>
+                        <button className="minus" onClick={() => adjust(t.id, -1)} aria-label={`Deduct from ${t.name}`}>−{open.wager ?? game.rowValues[open.ri]}</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <footer className="clue-foot">
+                <button className="back" onClick={close}>Back to board <kbd>Esc</kbd></button>
+              </footer>
             </>
           )}
-          <button onClick={close}>Back to board (Esc)</button>
         </section>
       ) : (
         <div className="board play" style={{ gridTemplateColumns: `repeat(${game.categories.length}, minmax(0, 1fr))` }}>
